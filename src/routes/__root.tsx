@@ -72,20 +72,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "SVN Global Consulting | Virtual CFO & Corporate Finance Advisory" },
+      { name: "description", content: "Premium financial consulting in Ahmedabad. Virtual CFO, tax advisory, transaction advisory, business valuation. 20+ years driving business transformation." },
+      { property: "og:title", content: "SVN Global Consulting | Strategic Financial Leadership" },
+      { property: "og:description", content: "Virtual CFO, FP&A, transaction advisory, tax & audit for ambitious businesses." },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
+      { rel: "stylesheet", href: appCss },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" },
     ],
   }),
   shellComponent: RootShell,
@@ -108,12 +106,25 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { WhatsAppButton } from "@/components/WhatsAppButton";
+import { LeadPopup } from "@/components/LeadPopup";
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <div className="flex min-h-screen flex-col">
+        <Header />
+        <main className="flex-1">
+          <Outlet />
+        </main>
+        <Footer />
+      </div>
+      <WhatsAppButton />
+      <LeadPopup />
     </QueryClientProvider>
   );
 }
