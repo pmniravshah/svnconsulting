@@ -179,7 +179,7 @@ function Contact() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="inline-flex items-center gap-2 rounded-md bg-navy text-navy-foreground px-7 py-4 text-sm font-semibold hover:bg-gradient-gold hover:text-gold-foreground transition-all shadow-elegant disabled:opacity-60"
+                    className="inline-flex items-center gap-2 rounded-md bg-navy text-navy-foreground px-7 py-4 text-sm font-semibold hover:bg-gradient-gold hover:text-gold transition-all shadow-elegant disabled:opacity-60"
                   >
                     {submitting ? "Sending…" : "Schedule Free Consultation"} <Send size={14} />
                   </button>

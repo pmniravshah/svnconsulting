@@ -61,7 +61,7 @@ export function Header() {
         <div className="hidden lg:block">
           <Link
             to="/contact"
-            className="inline-flex items-center rounded-md bg-navy text-navy-foreground px-5 py-2.5 text-sm font-medium hover:bg-gradient-gold hover:text-gold-foreground transition-all duration-300 shadow-elegant"
+            className="inline-flex items-center rounded-md bg-navy text-navy-foreground px-5 py-2.5 text-sm font-medium hover:bg-gradient-gold hover:text-gold transition-all duration-300 shadow-elegant"
           >
             Book Consultation
           </Link>

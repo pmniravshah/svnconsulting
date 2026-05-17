@@ -37,7 +37,7 @@ export function LeadPopup() {
           <Link
             to="/contact"
             onClick={close}
-            className="inline-flex w-full items-center justify-center rounded-md bg-navy text-navy-foreground px-5 py-3 text-sm font-medium hover:bg-gradient-gold hover:text-gold-foreground transition-all"
+            className="inline-flex w-full items-center justify-center rounded-md bg-navy text-navy-foreground px-5 py-3 text-sm font-medium hover:bg-gradient-gold hover:text-gold transition-all"
           >
             Schedule My Free Consultation
           </Link>

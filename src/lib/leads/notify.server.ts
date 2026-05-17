@@ -1,6 +1,4 @@
-// Server-only helper that sends lead notifications via Lovable Emails when
-// a verified email domain has been configured. Until then it is a no-op so
-// form submissions still succeed and leads are stored in the database.
+// Server-only helper — sends lead notification + confirmation emails via Resend.
 
 type Lead = {
   id: string;
@@ -12,44 +10,69 @@ type Lead = {
   message: string;
 };
 
-const NOTIFY_TO = "contact@svnglobal.com"; // internal recipient for new leads
-const SENDER_DOMAIN = ""; // populated once email domain is verified, e.g. "notify.svnglobal.com"
-const FROM_NAME = "SVN Global Consulting";
+const NOTIFY_TO = "contact@svnglobal.com";
+const FROM = "SVN Global Consulting <onboarding@resend.dev>";
 
 export async function sendLeadEmails(lead: Lead): Promise<void> {
-  if (!SENDER_DOMAIN) {
-    // Email infrastructure not configured yet — leads are stored in DB only.
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.warn("RESEND_API_KEY not set — skipping email notifications.");
     return;
   }
 
-  const from = `${FROM_NAME} <noreply@${SENDER_DOMAIN}>`;
-
   const internalHtml = `
-    <h2>New lead from svnglobal.com</h2>
+    <h2 style="color:#1a2e4a">New consultation request — svnglobal.com</h2>
     <p><strong>Name:</strong> ${escapeHtml(lead.name)}</p>
-    <p><strong>Company:</strong> ${escapeHtml(lead.company || "-")}</p>
+    <p><strong>Company:</strong> ${escapeHtml(lead.company || "—")}</p>
     <p><strong>Email:</strong> ${escapeHtml(lead.email)}</p>
     <p><strong>Phone:</strong> ${escapeHtml(lead.phone)}</p>
     <p><strong>Service:</strong> ${escapeHtml(lead.service)}</p>
     <p><strong>Message:</strong></p>
-    <p>${escapeHtml(lead.message).replace(/\n/g, "<br/>")}</p>
+    <p style="background:#f5f5f5;padding:12px;border-radius:6px">${escapeHtml(lead.message).replace(/\n/g, "<br/>")}</p>
     <hr/>
     <p style="color:#888;font-size:12px">Lead ID: ${lead.id}</p>
   `;
 
   const confirmationHtml = `
     <p>Dear ${escapeHtml(lead.name)},</p>
-    <p>Thank you for reaching out to <strong>SVN Global Consulting</strong>. We have received your enquiry regarding <em>${escapeHtml(lead.service)}</em> and a senior advisor will respond within one business day.</p>
-    <p>Warm regards,<br/>SVN Global Consulting<br/>Ahmedabad</p>
+    <p>Thank you for reaching out to <strong>SVN Global Consulting</strong>. We have received your enquiry regarding <em>${escapeHtml(lead.service)}</em>.</p>
+    <p>A senior advisor will get back to you within one business day.</p>
+    <p>Warm regards,<br/><strong>SVN Global Consulting</strong><br/>Ahmedabad</p>
   `;
 
-  // Implementation placeholder: when the email domain is verified, wire this
-  // to the email queue (sendLovableEmail / enqueue_email RPC). Until then the
-  // function exits early via the SENDER_DOMAIN check above.
-  void internalHtml;
-  void confirmationHtml;
-  void from;
-  void NOTIFY_TO;
+  await Promise.all([
+    sendEmail(apiKey, {
+      from: FROM,
+      to: NOTIFY_TO,
+      subject: `New lead: ${lead.name} — ${lead.service}`,
+      html: internalHtml,
+    }),
+    sendEmail(apiKey, {
+      from: FROM,
+      to: lead.email,
+      subject: "We received your consultation request — SVN Global Consulting",
+      html: confirmationHtml,
+    }),
+  ]);
+}
+
+async function sendEmail(
+  apiKey: string,
+  payload: { from: string; to: string; subject: string; html: string },
+) {
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Resend error ${res.status}: ${text}`);
+  }
 }
 
 function escapeHtml(s: string) {
