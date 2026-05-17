@@ -37,9 +37,11 @@ const schema = z.object({
 
 function Contact() {
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const result = schema.safeParse(Object.fromEntries(fd.entries()));
@@ -50,7 +52,24 @@ function Contact() {
       return;
     }
     setErrors({});
-    setSubmitted(true);
+    setServerError(null);
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/public/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...result.data, source: "contact-page" }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || "Submission failed. Please try again.");
+      }
+      setSubmitted(true);
+    } catch (err) {
+      setServerError((err as Error).message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -154,8 +173,15 @@ function Contact() {
                     <textarea name="message" rows={5} maxLength={1000} className="w-full rounded-md border border-input bg-background px-4 py-3 text-sm focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold resize-none" />
                     {errors.message && <p className="mt-1 text-xs text-destructive">{errors.message}</p>}
                   </div>
-                  <button type="submit" className="inline-flex items-center gap-2 rounded-md bg-navy text-navy-foreground px-7 py-4 text-sm font-semibold hover:bg-gradient-gold hover:text-gold-foreground transition-all shadow-elegant">
-                    Schedule Free Consultation <Send size={14} />
+                  {serverError && (
+                    <p className="text-sm text-destructive">{serverError}</p>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="inline-flex items-center gap-2 rounded-md bg-navy text-navy-foreground px-7 py-4 text-sm font-semibold hover:bg-gradient-gold hover:text-gold-foreground transition-all shadow-elegant disabled:opacity-60"
+                  >
+                    {submitting ? "Sending…" : "Schedule Free Consultation"} <Send size={14} />
                   </button>
                 </form>
               )}
