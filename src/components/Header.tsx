@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -30,11 +31,9 @@ export function Header() {
           : "bg-background"
       }`}
     >
-      <div className="container-pro flex h-20 items-center justify-between">
-        <Link to="/" className="flex items-center gap-3 group">
-          <div className="h-10 w-10 rounded-md bg-gradient-navy flex items-center justify-center shadow-elegant">
-            <span className="text-gold font-display text-lg font-bold">S</span>
-          </div>
+      <div className="container-pro flex h-25 items-center justify-between">
+        <Link to="/" className="flex items-center gap-5 group">
+          <img src={logo} alt="SVN Global Consulting" className="h-25 w-auto" />
           <div className="leading-tight">
             <div className="font-display text-lg font-semibold text-navy tracking-tight">SVN Global</div>
             <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Consulting</div>
