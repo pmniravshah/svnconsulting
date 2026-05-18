@@ -110,7 +110,7 @@ function Contact() {
               </div>
             </div>
 
-            <a
+            {/* <a
               href="#"
               onClick={(e) => e.preventDefault()}
               className="block p-6 rounded-xl border border-border hover:border-gold transition-colors group"
@@ -124,13 +124,13 @@ function Contact() {
                   <p className="text-sm text-muted-foreground">Download our capabilities deck (PDF)</p>
                 </div>
               </div>
-            </a>
+            </a> */}
 
             <a
-              href="https://calendly.com"
+              href={import.meta.env.VITE_CALENDLY_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="block p-6 rounded-xl bg-secondary/60 border border-border"
+              className="block p-6 rounded-xl bg-secondary/60 border border-border hover:border-gold transition-colors"
             >
               <p className="text-xs uppercase tracking-widest text-gold mb-2">Calendly</p>
               <p className="font-display text-lg font-semibold text-navy">Book a 30-min slot directly</p>
